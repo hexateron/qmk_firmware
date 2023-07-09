@@ -96,7 +96,8 @@ bool process_record_keychron(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
-#if defined(RGB_MATRIX_ENABLE) && (defined(CAPS_LOCK_LED_INDEX) || defined(NUM_LOCK_LED_INDEX))
+#if defined(RGB_MATRIX_ENABLE) && (defined(CAPS_LOCK_LED_INDEX) || defined(NUM_LOCK_LED_INDEX) ||\
+     defined(HXN_SCROLL_LOCK_LED_INDEX) || defined(HXN_NUM_LOCK_LED_INDEX))
 
 #    define CAPS_NUM_LOCK_MAX_BRIGHTNESS 0xFF
 #    ifdef RGB_MATRIX_MAXIMUM_BRIGHTNESS
@@ -159,6 +160,22 @@ void rgb_matrix_indicators_none_kb(void) {
     rgb_matrix_update_pwm_buffers();
 }
 
+#if defined(HXN_NUM_LOCK_LED_INDEX)
+extern void led_wakeup(void);
+bool hxn_is_suspended;
+
+void suspend_power_down_kb(void) {
+    suspend_power_down_user();
+    hxn_is_suspended = true;
+}
+
+void suspend_wakeup_init_kb(void) {
+    hxn_is_suspended = false;
+    led_wakeup();
+    suspend_wakeup_init_user();
+}
+#endif
+
 bool led_update_kb(led_t led_state) {
     bool res = led_update_user(led_state);
 
@@ -194,7 +211,7 @@ bool led_update_kb(led_t led_state) {
         }
 #    endif
 #    if defined(HXN_NUM_LOCK_LED_INDEX)
-        if (!led_state.num_lock) {
+        if (!led_state.num_lock && !hxn_is_suspended) {
             uint8_t v = light_brightness_get();
             rgb_matrix_set_color(HXN_NUM_LOCK_LED_INDEX, v, v, v);
         } else {
