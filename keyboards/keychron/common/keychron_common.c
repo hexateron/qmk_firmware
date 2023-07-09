@@ -134,7 +134,18 @@ bool rgb_matrix_indicators_kb(void) {
         rgb_matrix_set_color(CAPS_LOCK_LED_INDEX, v, v, v); // white, with the adjusted brightness
     }
 #    endif
-#    if defined(NUM_LOCK_LED_INDEX)
+#    if defined(HXN_SCROLL_LOCK_LED_INDEX)
+    if (host_keyboard_led_state().scroll_lock) {
+        uint8_t v = light_brightness_get();
+        rgb_matrix_set_color(HXN_SCROLL_LOCK_LED_INDEX, v, v, v); // white, with the adjusted brightness
+    }
+#    endif
+#    if defined(HXN_NUM_LOCK_LED_INDEX)
+    if (!host_keyboard_led_state().num_lock) {
+        uint8_t v = light_brightness_get();
+        rgb_matrix_set_color(HXN_NUM_LOCK_LED_INDEX, v, v, v); // white, with the adjusted brightness
+    }
+#    elif defined(NUM_LOCK_LED_INDEX)
     if (host_keyboard_led_state().num_lock) {
         uint8_t v = light_brightness_get();
         rgb_matrix_set_color(NUM_LOCK_LED_INDEX, v, v, v); // white, with the adjusted brightness
@@ -174,7 +185,22 @@ bool led_update_kb(led_t led_state) {
             rgb_matrix_set_color(CAPS_LOCK_LED_INDEX, 0, 0, 0);
         }
 #    endif
-#    if defined(NUM_LOCK_LED_INDEX)
+#    if defined(HXN_SCROLL_LOCK_LED_INDEX)
+        if (led_state.scroll_lock) {
+            uint8_t v = light_brightness_get();
+            rgb_matrix_set_color(HXN_SCROLL_LOCK_LED_INDEX, v, v, v);
+        } else {
+            rgb_matrix_set_color(HXN_SCROLL_LOCK_LED_INDEX, 0, 0, 0);
+        }
+#    endif
+#    if defined(HXN_NUM_LOCK_LED_INDEX)
+        if (!led_state.num_lock) {
+            uint8_t v = light_brightness_get();
+            rgb_matrix_set_color(HXN_NUM_LOCK_LED_INDEX, v, v, v);
+        } else {
+            rgb_matrix_set_color(HXN_NUM_LOCK_LED_INDEX, 0, 0, 0);
+        }
+#    elif defined(NUM_LOCK_LED_INDEX)
         if (led_state.num_lock) {
             uint8_t v = light_brightness_get();
             rgb_matrix_set_color(NUM_LOCK_LED_INDEX, v, v, v);
